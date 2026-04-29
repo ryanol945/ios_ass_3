@@ -9,42 +9,45 @@ import SwiftUI
 import Combine
 
 struct ContentView: View {
-    let timezones: [String] = [
-        "America/Denver",
-        "America/Chicago",
-        "Sydeny",
-        "Los Angeles"
-    ]
-    
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
-    @State private var currentDate = Date()
+    @StateObject var converterVM = TimezoneViewModel()
+    @StateObject var clockVM = TimezoneViewModel()
     
     var body: some View {
-        List(timezones, id: \.self) { timezone in
-            HStack {
-                Text(timezone)
-                Spacer()
-                Text(currentTime(for: timezone, at: currentDate))
-                    .onReceive(timer) { input in
-                        currentDate = input
+        NavigationView {
+            List {
+                //NavigationLink(destination: CalculatorView()) {
+                    HStack {
+                        Image(systemName: "number")
+                            .foregroundColor(.blue)
+                        Text("Calculator")
                     }
+                //}
+                
+                NavigationLink(destination: ConverterView(vm: converterVM)) {
+                    HStack {
+                        Image(systemName: "globe")
+                            .foregroundColor(.green)
+                        Text("Converter")
+                    }
+                }
+
+                //NavigationLink(destination: AlarmView()) {
+                    HStack {
+                        Image(systemName: "alarm")
+                            .foregroundColor(.orange)
+                        Text("Alarms")
+                    }
+                //}
+                
+                NavigationLink(destination: ClockView(vm: clockVM)) {
+                    HStack {
+                        Image(systemName: "clock")
+                            .foregroundColor(.purple)
+                        Text("Clock")
+                    }
+                }
             }
+            .navigationTitle("Timezone Utilities")
         }
     }
-}
-
-func currentTime(for timezoneIdentifier: String, at date: Date) -> String {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HH:mm:ss"
-    
-    if let timezone = TimeZone(identifier: timezoneIdentifier) {
-        formatter.timeZone = timezone
-    }
-    
-    return formatter.string(from: date)
-}
-
-#Preview {
-    ContentView()
 }
