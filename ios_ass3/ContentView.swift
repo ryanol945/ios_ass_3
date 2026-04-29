@@ -11,18 +11,18 @@ import Combine
 struct ContentView: View {
     @StateObject var converterVM = TimezoneViewModel()
     @StateObject var clockVM = TimezoneViewModel()
-    
+
     var body: some View {
         NavigationView {
             List {
-                //NavigationLink(destination: CalculatorView()) {
+                NavigationLink(destination: CalcHomeView()) {
                     HStack {
                         Image(systemName: "number")
                             .foregroundColor(.blue)
                         Text("Calculator")
                     }
-                //}
-                
+                }
+
                 NavigationLink(destination: ConverterView(vm: converterVM)) {
                     HStack {
                         Image(systemName: "globe")
@@ -31,14 +31,12 @@ struct ContentView: View {
                     }
                 }
 
-                //NavigationLink(destination: AlarmView()) {
-                    HStack {
-                        Image(systemName: "alarm")
-                            .foregroundColor(.orange)
-                        Text("Alarms")
-                    }
-                //}
-                
+                HStack {
+                    Image(systemName: "alarm")
+                        .foregroundColor(.orange)
+                    Text("Alarms")
+                }
+
                 NavigationLink(destination: ClockView(vm: clockVM)) {
                     HStack {
                         Image(systemName: "clock")
