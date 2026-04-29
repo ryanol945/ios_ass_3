@@ -1,0 +1,2 @@
+    case .denied:
+        return true
