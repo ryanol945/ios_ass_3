@@ -9,6 +9,9 @@ import SwiftUI
 import Combine
 
 struct ContentView: View {
+    @StateObject var converterVM = TimezoneViewModel()
+    @StateObject var clockVM = TimezoneViewModel()
+    
     var body: some View {
         NavigationView {
             List {
@@ -20,7 +23,7 @@ struct ContentView: View {
                     }
                 //}
                 
-                NavigationLink(destination: ConverterView()) {
+                NavigationLink(destination: ConverterView(vm: converterVM)) {
                     HStack {
                         Image(systemName: "globe")
                             .foregroundColor(.green)
@@ -35,6 +38,14 @@ struct ContentView: View {
                         Text("Alarms")
                     }
                 //}
+                
+                NavigationLink(destination: ClockView(vm: clockVM)) {
+                    HStack {
+                        Image(systemName: "clock")
+                            .foregroundColor(.purple)
+                        Text("Clock")
+                    }
+                }
             }
             .navigationTitle("Timezone Utilities")
         }
