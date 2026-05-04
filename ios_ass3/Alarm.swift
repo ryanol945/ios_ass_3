@@ -13,7 +13,6 @@ struct Alarm: Identifiable {
     let time: Date
     let label: String
     var isEnabled: Bool
-    var vibrationEnabled: Bool = false
     
     enum Weekday: String, CaseIterable, Identifiable {
         var id: String { self.rawValue }

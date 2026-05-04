@@ -7,12 +7,13 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 class AlarmManager: ObservableObject {
     @Published var alarms: [Alarm] = []
     
     func addAlarm() {
-        let newAlarm = Alarm(time: Date(), label: "New Alert", isEnabled: true)
+        let newAlarm = Alarm(time: Date(), label: "New Alarm", isEnabled: true)
         alarms.append(newAlarm)
     }
     
