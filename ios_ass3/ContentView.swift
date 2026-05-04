@@ -30,7 +30,6 @@ struct ContentView: View {
                         Text("Converter")
                     }
                 }
-
                 HStack {
                     Image(systemName: "alarm")
                         .foregroundColor(.orange)
