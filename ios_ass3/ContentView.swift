@@ -10,7 +10,6 @@ import Combine
 
 struct ContentView: View {
     @StateObject var converterVM = TimezoneViewModel()
-    @StateObject var clockVM = TimezoneViewModel()
 
     var body: some View {
         NavigationView {
@@ -39,7 +38,7 @@ struct ContentView: View {
                     }
                 }
 
-                NavigationLink(destination: ClockView(vm: clockVM)) {
+                NavigationLink(destination: ClockView()) {
                     HStack {
                         Image(systemName: "clock")
                             .foregroundColor(.purple)
@@ -47,7 +46,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("Timezone Utilities")
+            .navigationTitle("Time Util")
         }
     }
 }

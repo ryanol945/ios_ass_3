@@ -1,33 +1,30 @@
 //
-//  alarm2.swift
+//  AlarmComponent.swift
 //  ios_ass3
 //
-//  Created by Jaiden Gardner on 29/4/2026.
+//  Created by Ryan Nolan on 6/5/2026.
 //
 
 import Foundation
 
 struct Alarm: Identifiable, Codable {
     let id: UUID
-    var time: Date
+    var clock: Clock
     var label: String
     var isEnabled: Bool
     var vibrationEnabled: Bool
-    var timezoneIdentifier: String
 
     init(
-        id: UUID = UUID(),
-        time: Date = Date(),
+        clock: Clock = Clock(),
         label: String = "Alarm",
         isEnabled: Bool = true,
         vibrationEnabled: Bool = true,
-        timezoneIdentifier: String = TimeZone.current.identifier
     ) {
-        self.id = id
-        self.time = time
+        self.clock = clock
+        self.id = clock.id
+        
         self.label = label
         self.isEnabled = isEnabled
         self.vibrationEnabled = vibrationEnabled
-        self.timezoneIdentifier = timezoneIdentifier
     }
 }

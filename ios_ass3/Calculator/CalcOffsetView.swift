@@ -81,17 +81,6 @@ struct CalcOffsetView: View {
                         .multilineTextAlignment(.center)
                         .contentTransition(.numericText())
                         .animation(.spring(duration: 0.3), value: resultString)
-
-                    HStack {
-                        Text("in").foregroundStyle(.secondary)
-                        Picker("", selection: $resultZone) {
-                            ForEach(zones, id: \.identifier) {
-                                Text($0.abbreviation() ?? $0.identifier).tag($0)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                    }
-                    .font(.subheadline)
                 }
 
                 Spacer()

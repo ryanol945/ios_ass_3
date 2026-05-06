@@ -87,10 +87,10 @@ class AlarmManager: ObservableObject {
         content.sound = .defaultCritical
         content.interruptionLevel = alarm.vibrationEnabled ? .critical : .active
         
-        let tz = TimeZone(identifier: alarm.timezoneIdentifier) ?? .current
+        let tz = TimeZone(identifier: alarm.clock.timezoneIdentifier) ?? .current
         var calendar = Calendar.current
         calendar.timeZone = tz
-        let components = calendar.dateComponents([.hour, .minute], from: alarm.time)
+        let components = calendar.dateComponents([.hour, .minute], from: alarm.clock.time)
         
         var triggerComponents = DateComponents()
         triggerComponents.hour = components.hour

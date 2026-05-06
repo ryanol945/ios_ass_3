@@ -6,11 +6,8 @@
 //
 import SwiftUI
 
-let zones: [TimeZone] = [
-    "America/New_York", "America/Los_Angeles", "America/Chicago",
-    "America/Denver", "Europe/London", "Europe/Paris",
-    "Asia/Tokyo", "Asia/Singapore", "Australia/Sydney", "UTC"
-].compactMap { TimeZone(identifier: $0) }
+
+let zones: [TimeZone] = TimeZone.knownTimeZoneIdentifiers.sorted().compactMap { TimeZone(identifier: $0) }
 
 func makeDate(year: Int, month: Int, day: Int,
               hour: Int, minute: Int, period: Int,
@@ -53,9 +50,14 @@ struct CalcTimeInputView: View {
                 .pickerStyle(.wheel).frame(maxWidth: .infinity).clipped()
 
                 Picker("", selection: $year) {
-                    ForEach(2020...2035, id: \.self) { Text("\($0)").tag($0) }
+                    ForEach(2020...2035, id: \.self) { yearValue in
+                        Text("\(yearValue, format: .number.grouping(.never))")
+                            .tag(yearValue)
+                    }
                 }
-                .pickerStyle(.wheel).frame(maxWidth: .infinity).clipped()
+                .pickerStyle(.wheel)
+                .frame(maxWidth: .infinity)
+                .clipped()
             }
             .frame(height: 80)
 
@@ -80,9 +82,12 @@ struct CalcTimeInputView: View {
             }
             .frame(height: 80)
 
-            Picker("", selection: $zone) {
-                ForEach(zones, id: \.identifier) {
-                    Text($0.abbreviation() ?? $0.identifier).tag($0)
+            Picker("Select Time Zone", selection: $zone) {
+                ForEach(zones, id: \.identifier) { tz in
+                    let displayName = tz.identifier.replacingOccurrences(of: "_", with: " ")
+                    
+                    Text(displayName)
+                        .tag(tz)
                 }
             }
             .pickerStyle(.menu)

@@ -27,7 +27,7 @@ class TimezoneViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    func addLocation(identifier: String = "America/New_York") {
+    func addLocation(identifier: String = TimeZone.current.identifier) {
         timezoneNames.append(identifier)
     }
 

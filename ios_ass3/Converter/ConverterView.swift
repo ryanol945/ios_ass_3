@@ -20,9 +20,10 @@ struct ConverterView: View {
                     Text("Base Time: \(vm.formatTime(decimalHour: vm.timeValue))")
                         .font(.system(.headline, design: .monospaced))
                     Slider(value: $vm.timeValue, in: 0...23.92, step: 5/60)
+                        .tint(.green)
                     Picker("Base", selection: $vm.timezoneNames[0]) {
                         ForEach(allTimezones, id: \.self) { Text($0).tag($0) }
-                    }
+                    }.tint(.green)
                 }.padding()
             }
             List {
@@ -39,6 +40,7 @@ struct ConverterView: View {
                     }
                 }.onDelete(perform: vm.removeLocation)
                 Button("Add Timezone") { vm.addLocation() }
+                    .foregroundColor(.green)
             }
         }
         .navigationTitle("Converter")

@@ -20,28 +20,28 @@ struct EditAlarmView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // ── Time Picker ──────────────────────────────────────────────
-                Section(header: Text("Alarm Time")) {
-                    DatePicker(
-                        "Select Time",
-                        selection: $alarm.time,
-                        displayedComponents: .hourAndMinute
-                    )
-                    .datePickerStyle(.wheel)
-                    .labelsHidden()
-                    .environment(\.timeZone, TimeZone(identifier: alarm.timezoneIdentifier) ?? .current)
-                }
-
                 // ── Timezone ─────────────────────────────────────────────────
                 Section(header: Text("Timezone")) {
-                    Picker("Timezone", selection: $alarm.timezoneIdentifier) {
+                    Picker("Timezone", selection: $alarm.clock.timezoneIdentifier) {
                         ForEach(timezoneIdentifiers, id: \.self) { tz in
                             Text(tz).tag(tz)
                         }
                     }
                     .pickerStyle(.navigationLink)
                 }
-
+                
+                // ── Time Picker ──────────────────────────────────────────────
+                Section(header: Text("Alarm Time")) {
+                    DatePicker(
+                        "Select Time",
+                        selection: $alarm.clock.time,
+                        displayedComponents: .hourAndMinute
+                    )
+                    .datePickerStyle(.wheel)
+                    .labelsHidden()
+                    .environment(\.timeZone, TimeZone(identifier: alarm.clock.timezoneIdentifier) ?? .current)
+                }
+                
                 // ── Label ────────────────────────────────────────────────────
                 Section(header: Text("Label")) {
                     TextField("Alarm label", text: $alarm.label)
@@ -79,12 +79,4 @@ struct EditAlarmView: View {
             }
         }
     }
-}
-
-#Preview {
-    EditAlarmView(
-        alarmManager: AlarmManager(),
-        alarm: Alarm(label: "Wake Up"),
-        isNew: true
-    )
 }

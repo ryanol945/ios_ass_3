@@ -22,11 +22,11 @@ struct AlarmDetailView: View {
 
                     // ── Big time display ─────────────────────────────────────
                     VStack(spacing: 4) {
-                        Text(formattedTime(alarm.time))
+                        Text(formattedTime(alarm.clock.time))
                             .font(.system(size: 64, weight: .bold, design: .rounded))
                             .foregroundColor(alarm.isEnabled ? .black : .gray)
 
-                        Text(alarm.timezoneIdentifier)
+                        Text(alarm.clock.timezoneIdentifier)
                             .font(.caption)
                             .foregroundColor(.orange.opacity(0.8))
                     }
@@ -52,7 +52,7 @@ struct AlarmDetailView: View {
                                         Text("Alarm")
                                             .fontWeight(.semibold)
                                             .foregroundColor(.black)
-                                        Text("\(alarm.label)  ·  \(formattedTime(alarm.time))")
+                                        Text("\(alarm.label)  ·  \(formattedTime(alarm.clock.time))")
                                             .font(.caption)
                                             .foregroundColor(.gray)
                                     }
@@ -137,7 +137,7 @@ struct AlarmDetailView: View {
     private func formattedTime(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
-        formatter.timeZone = TimeZone(identifier: alarm.timezoneIdentifier) ?? .current
+        formatter.timeZone = TimeZone(identifier: alarm.clock.timezoneIdentifier) ?? .current
         return formatter.string(from: date)
     }
 }

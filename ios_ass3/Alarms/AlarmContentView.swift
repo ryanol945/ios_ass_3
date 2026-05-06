@@ -39,8 +39,6 @@ struct AlarmMainContentView: View {
                 }
                 .hidden()
             }
-            .navigationTitle("Alarms")
-            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -58,6 +56,8 @@ struct AlarmMainContentView: View {
                 EditAlarmView(alarmManager: alarmManager, alarm: alarm, isNew: false)
             }
         }
+        .navigationTitle("Alarms")
+        .navigationBarTitleDisplayMode(.large)
         .preferredColorScheme(.light)
     }
 
@@ -101,7 +101,7 @@ struct AlarmMainContentView: View {
                     .frame(width: 10, height: 10)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(formattedTime(alarm.time, timezoneID: alarm.timezoneIdentifier))
+                    Text(formattedTime(alarm.clock.time, timezoneID: alarm.clock.timezoneIdentifier))
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundColor(alarm.isEnabled ? .black : .gray)
 
