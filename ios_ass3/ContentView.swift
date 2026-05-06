@@ -30,11 +30,13 @@ struct ContentView: View {
                         Text("Converter")
                     }
                 }
-
-                HStack {
-                    Image(systemName: "alarm")
-                        .foregroundColor(.orange)
-                    Text("Alarms")
+                
+                NavigationLink(destination: AlarmMainContentView()) {
+                    HStack {
+                        Image(systemName: "alarm")
+                            .foregroundColor(.orange)
+                        Text("Alarms")
+                    }
                 }
 
                 NavigationLink(destination: ClockView(vm: clockVM)) {
