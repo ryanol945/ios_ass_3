@@ -6,22 +6,28 @@
 //
 
 import Foundation
-import SwiftUI
 
-struct Alarm: Identifiable {
-    let id = UUID()
-    let time: Date
-    let label: String
+struct Alarm: Identifiable, Codable {
+    let id: UUID
+    var time: Date
+    var label: String
     var isEnabled: Bool
-    
-    enum Weekday: String, CaseIterable, Identifiable {
-        var id: String { self.rawValue }
-        case monday = "Mon"
-        case tuesday = "Tue"
-        case wednesday = "Wed"
-        case thursday = "Thu"
-        case friday = "Fri"
-        case saturday = "Sat"
-        case sunday = "Sun"
+    var vibrationEnabled: Bool
+    var timezoneIdentifier: String
+
+    init(
+        id: UUID = UUID(),
+        time: Date = Date(),
+        label: String = "Alarm",
+        isEnabled: Bool = true,
+        vibrationEnabled: Bool = true,
+        timezoneIdentifier: String = TimeZone.current.identifier
+    ) {
+        self.id = id
+        self.time = time
+        self.label = label
+        self.isEnabled = isEnabled
+        self.vibrationEnabled = vibrationEnabled
+        self.timezoneIdentifier = timezoneIdentifier
     }
 }

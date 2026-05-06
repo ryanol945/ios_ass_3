@@ -6,77 +6,42 @@
 //
 
 import SwiftUI
-import AlarmKit
+import UserNotifications
 
-struct AlarmContentView: View {
-    private let alarmManager = AlarmManager.shared
-    
+/// A live clock widget that also shows the current pending alarm count.
+/// This view is kept for reference; main alarm UI is AlarmMainContentView.
+struct TimezoneAlarmStatusView: View {
+    @StateObject private var alarmManager = AlarmManager()
+    @State private var pendingCount: Int = 0
+
     var body: some View {
-        VStack{
+        VStack(spacing: 20) {
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 Text(context.date, format: Date.FormatStyle(date: .omitted, time: .standard))
                     .font(.system(size: 48, weight: .bold, design: .monospaced))
                     .padding()
             }
-            
-            Button("Schedule Alarm") {
-                Task {
-                    await scheduleTimer()
-                }
-            }
-        }
-        .task {
-            guard await requestPermission() else { return }
-        }
-    }
-    
-    private func requestPermission() async -> Bool {
-        switch alarmManager.authorizationState {
-        case .notDetermined:
-            do {
-                return try await alarmManager.requestAuthorization() == .authorized
-            } catch {
-                return false
-            }
-        case .authorized:
-            return true
-        case .denied:
-            return true
-        
-        @unknown default:
-            return false
-        }
-    }
-    
-    private func scheduleTimer() async {
-        let alert = AlarmPresentation.Alert(
-            title: "Ready",
-            stopButton: AlarmButton(
-                text: "Done",
-                textColor: .pink,
-                systemImageName: "Checkmark"
-                )
-            )
-        
-        let attributes = AlarmAttributes<EmptyMetadata>(
-            presentation: AlarmPresentation(alert: alert),
-            tintColor: .pink
-        )
-        do {
-            let timerAlarm = try await alarmManager.schedule(
-                id: UUID(),
-                configuration: .timer(
-                    duration: 60,
-                    attributes: attributes
-                )
-            )
-        } catch {
-            print("Schedulig error: \(error)")
-        }
-    }
-}
 
-nonisolated
-struct EmptyMetadata: AlarmMetadata{
-    
+            Text(pendingCount == 0
+                 ? "No alarms scheduled"
+                 : "\(pendingCount) notification\(pendingCount == 1 ? "" : "s") pending")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+
+            Button("Refresh Status") {
+                refreshPendingCount()
+            }
+            .buttonStyle(.bordered)
+            .tint(.orange)
+        }
+        .onAppear { refreshPendingCount() }
+    }
+
+    private func refreshPendingCount() {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+            DispatchQueue.main.async {
+                self.pendingCount = requests.count
+            }
+        }
+    }
 }

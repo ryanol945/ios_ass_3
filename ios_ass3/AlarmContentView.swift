@@ -9,98 +9,148 @@ import SwiftUI
 
 struct AlarmMainContentView: View {
     @StateObject private var alarmManager = AlarmManager()
-    
-    @State private var selectedAlarm: Alarm? = nil
+
+    @State private var showingAddSheet  = false
+    @State private var editAlarm: Alarm? = nil
     @State private var detailAlarm: Alarm? = nil
-    
-    @State private var editMode: EditMode = .inactive
-    
-    var ListOfAlarms: [Alarm] {
-        var alarmList = alarmManager.alarms
-    }
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.black.ignoresSafeArea()
-                
-                VStack {
-                    
-                }
-                
-                NavigationLink(destination: detailAlarm.map { AlarmDetailView(alarm: $0) }, isActive: Binding(
-                    get: { detailAlarm != nil },
-                    set: { if !$0 { detailAlarm = nil } })) {
-                        EmptyView()
+                Color.white.ignoresSafeArea()
+
+                Group {
+                    if alarmManager.alarms.isEmpty {
+                        emptyState
+                    } else {
+                        alarmList
                     }
-                    .hidden()
-            }
-            .sheet(item: $selectedAlarm) {alarm in
-                EditAlarmView(alarmManager: alarmManager, alarm: alarm)
-            }
-            .onAppear {
-                if alarmManager.alarms.isEmpty {
-                    alarmManager.addAlarm()
                 }
+
+                // Invisible NavigationLink for detail navigation
+                NavigationLink(
+                    destination: detailAlarm.map { AlarmDetailView(alarm: $0, alarmManager: alarmManager) },
+                    isActive: Binding(
+                        get: { detailAlarm != nil },
+                        set: { if !$0 { detailAlarm = nil } }
+                    )
+                ) {
+                    EmptyView()
+                }
+                .hidden()
+            }
+            .navigationTitle("Alarms")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingAddSheet = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .foregroundColor(.orange)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddSheet) {
+                EditAlarmView(alarmManager: alarmManager, alarm: Alarm(), isNew: true)
+            }
+            .sheet(item: $editAlarm) { alarm in
+                EditAlarmView(alarmManager: alarmManager, alarm: alarm, isNew: false)
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
-    
-    @State private var editSelection: Set<Alarm.ID> = []
-    
-    private func onDelete(offsets: IndexSet) {
-        //itemsToDelete = offsets
-        //showingDeleteConfirmation = true
+
+    // MARK: - Subviews
+
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "alarm")
+                .font(.system(size: 60))
+                .foregroundColor(.gray.opacity(0.5))
+            Text("No Alarms")
+                .font(.title2)
+                .foregroundColor(.gray)
+            Text("Tap + to add your first alarm")
+                .font(.subheadline)
+                .foregroundColor(.gray.opacity(0.7))
+        }
     }
-    
+
+    private var alarmList: some View {
+        List {
+            ForEach(alarmManager.alarms) { alarm in
+                alarmRow(alarm: alarm)
+                    .listRowBackground(Color.gray.opacity(0.15))
+                    .listRowSeparatorTint(Color.gray.opacity(0.3))
+            }
+            .onDelete(perform: alarmManager.deleteAlarm)
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+    }
+
     private func alarmRow(alarm: Alarm) -> some View {
         Button {
             detailAlarm = alarm
         } label: {
-            HStack {
+            HStack(spacing: 14) {
+                // Active indicator
                 Circle()
-                    .fill(.red)
+                    .fill(alarm.isEnabled ? Color.orange : Color.gray.opacity(0.4))
                     .frame(width: 10, height: 10)
+
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(formattedTime(alarm.time))
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.white)
-                    
-                    HStack {
+                    Text(formattedTime(alarm.time, timezoneID: alarm.timezoneIdentifier))
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundColor(alarm.isEnabled ? .black : .gray)
+
+                    HStack(spacing: 6) {
                         Text(alarm.label)
                             .font(.subheadline)
-                            .foregroundStyle(.gray)
-                        
+                            .foregroundColor(.gray)
                     }
                 }
-                
-                Spacer ()
-                
+
+                Spacer()
+
                 Toggle("", isOn: Binding(
                     get: { alarm.isEnabled },
-                    set: { newValue in
-                        var updatedAlarm = alarm
-                        updatedAlarm.isEnabled = newValue
-                        alarmManager.updateAlarm(alarm: updatedAlarm)
+                    set: { _ in
+                        alarmManager.toggleAlarm(alarm)
                         HapticManager.triggerSelectionHaptic()
                     }
                 ))
-                labelsHidden()
-                    .tint(.green)
+                .labelsHidden()
+                .tint(.orange)
             }
+            .padding(.vertical, 6)
         }
         .buttonStyle(.plain)
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                if let index = alarmManager.alarms.firstIndex(where: { $0.id == alarm.id }) {
+                    alarmManager.deleteAlarm(at: IndexSet([index]))
+                }
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+
+            Button {
+                editAlarm = alarm
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            .tint(.blue)
+        }
     }
-    
-    private func formattedTime(_ date: Date) -> String {
+
+    // MARK: - Helpers
+
+    private func formattedTime(_ date: Date, timezoneID: String) -> String {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
+        formatter.timeZone = TimeZone(identifier: timezoneID) ?? .current
         return formatter.string(from: date)
     }
-}
-
-#Preview {
-    ContentView()
 }
